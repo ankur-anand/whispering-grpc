@@ -1,8 +1,12 @@
 package main
 
 import (
+	"bytes"
+	"encoding/binary"
 	"flag"
 	"fmt"
+	"io"
+	"io/ioutil"
 	"os"
 	"strconv"
 
@@ -11,8 +15,13 @@ import (
 )
 
 const (
-	fileDB = "person.db"
+	fileDB  = "person.db"
+	sizeLen = 8
 )
+
+type length int64
+
+var endianness = binary.LittleEndian
 
 func main() {
 	flag.Parse()
@@ -42,7 +51,31 @@ func main() {
 }
 
 func list() error {
-	return nil
+	b, err := ioutil.ReadFile(fileDB)
+	if err != nil {
+		return fmt.Errorf("could not read %s: %v", fileDB, err)
+	}
+
+	for {
+		if len(b) == 0 {
+			return nil
+		} else if len(b) < sizeLen {
+			return fmt.Errorf("db improperly formatted")
+		}
+		var l length
+		if err := binary.Read(bytes.NewReader(b[:sizeLen]), endianness, &l); err != nil {
+			return fmt.Errorf("error decoding the message %v", err)
+		}
+		b = b[sizeLen:]
+		var person persondb.Person
+		if err := proto.Unmarshal(b[:l], &person); err == io.EOF {
+			return nil
+		} else if err != nil {
+			return fmt.Errorf("could not read person: %v", err)
+		}
+		b = b[l:]
+		fmt.Println(person)
+	}
 }
 
 // what save the list inside the file.
@@ -64,9 +97,14 @@ func add(args []string) error {
 	if err != nil {
 		return fmt.Errorf("could not encode task: %v", err)
 	}
+
 	f, err := os.OpenFile(fileDB, os.O_WRONLY|os.O_CREATE|os.O_APPEND, 0666)
 	if err != nil {
 		return fmt.Errorf("could not open file %s: %v", fileDB, err)
+	}
+	// store the length of the person
+	if err := binary.Write(f, endianness, length(len(b))); err != nil {
+		return fmt.Errorf("could not encode length of message %d: %v", len(b), err)
 	}
 	_, err = f.Write(b)
 	if err != nil {
