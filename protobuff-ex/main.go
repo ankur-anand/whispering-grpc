@@ -10,6 +10,10 @@ import (
 	proto "github.com/golang/protobuf/proto"
 )
 
+const (
+	fileDB = "person.db"
+)
+
 func main() {
 	flag.Parse()
 	if flag.NArg() < 1 {
@@ -56,6 +60,20 @@ func add(args []string) error {
 		Age:   uint32(age),
 		Email: args[2],
 	}
-	fmt.Println(proto.MarshalTextString(p))
+	b, err := proto.Marshal(p)
+	if err != nil {
+		return fmt.Errorf("could not encode task: %v", err)
+	}
+	f, err := os.OpenFile(fileDB, os.O_WRONLY|os.O_CREATE|os.O_APPEND, 0666)
+	if err != nil {
+		return fmt.Errorf("could not open file %s: %v", fileDB, err)
+	}
+	_, err = f.Write(b)
+	if err != nil {
+		return fmt.Errorf("could not write task to file: %v", err)
+	}
+	if err := f.Close(); err != nil {
+		return fmt.Errorf("could not close the file %s: %v", fileDB, err)
+	}
 	return nil
 }
