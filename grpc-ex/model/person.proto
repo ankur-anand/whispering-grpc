@@ -1,0 +1,21 @@
+syntax = "proto3";
+
+package model;
+
+message User {
+    string name = 1;
+    uint32 age = 2;
+    string email = 3;
+}
+
+message Users {
+    repeated User users = 1;
+}
+
+message Void{}
+
+// gRPC We need to define a services.
+service GetUser {
+    rpc List(Void) returns (Users){}
+    rpc Add(User) returns(Void){}
+}
