@@ -10,6 +10,7 @@ import (
 	"unsafe"
 
 	proto "github.com/golang/protobuf/proto"
+	flatbuffers "github.com/google/flatbuffers/go"
 )
 
 // OnekRequest represents an request of size (approzimately)
@@ -62,5 +63,21 @@ func main() {
 		log.Fatal(err)
 	}
 	fmt.Println(len(mb)) // 1030
+
+	// flatbuffer
+
+	b := flatbuffers.NewBuilder(0)
+	OneKReqStartDataVector(b, 1024)
+	for i := range sl {
+		b.PrependByte(byte(i / 255))
+	}
+	data := b.EndVector(1024)
+	OneKReqStart(b)
+	OneKReqAddId(b, 1234)
+	OneKReqAddData(b, data)
+	reqF := OneKReqEnd(b)
+	b.Finish(reqF)
+	bytesF := b.Bytes[b.Head():]
+	fmt.Println(len(bytesF))
 
 }

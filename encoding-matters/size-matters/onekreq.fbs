@@ -1,0 +1,8 @@
+namespace main;
+
+table OneKReq {
+    id: ulong;
+    data: [byte];
+}
+
+root_type OneKReq;
