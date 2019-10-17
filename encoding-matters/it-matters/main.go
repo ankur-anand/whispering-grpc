@@ -13,11 +13,69 @@ import (
 	flatbuffers "github.com/google/flatbuffers/go"
 )
 
+// START OMIT
+
 // OnekRequest represents an request of size (approzimately)
 // one KB in go type
-type OnekRequest struct {
-	ID   int64
-	Data [1024]byte
+type OnekRequest struct { // HL
+	ID   int64      // HL
+	Data [1024]byte // HL
+} // HL
+
+// END OMIT
+
+func printGoSize() {
+	// size in go type 1024 + 8 = 1032 no padding is needed
+	req := OnekRequest{
+		ID:   1234,
+		Data: [1024]byte{},
+	}
+
+	// verify using unsafe package
+	goSize := unsafe.Sizeof(req) // HL
+	fmt.Println(goSize)
+	// OUTPUT 1032 // HL
+}
+
+func printJSONSize() {
+	// size in go type 1024 + 8 = 1032 no padding is needed
+	req := OnekRequest{
+		ID:   1234,
+		Data: [1024]byte{},
+	}
+
+	// verify using unsafe package
+	var jsonXML bytes.Buffer
+	jsonEnc := json.NewEncoder(&jsonXML)
+	jsonEnc.Encode(req)
+	fmt.Println(jsonXML.Len()) // 2069 // HL
+}
+
+func printXMLSize() {
+	// size in go type 1024 + 8 = 1032 no padding is needed
+	req := OnekRequest{
+		ID:   1234,
+		Data: [1024]byte{},
+	}
+
+	var bufxml bytes.Buffer
+	xmlEnc := xml.NewEncoder(&bufxml)
+	xmlEnc.Encode(req)
+	fmt.Println(bufxml.Len()) // 3125 // HL
+}
+
+func printProtobuffSize() {
+	var reqProto Onekreq
+	sl := make([]byte, 1024)
+	for i := range sl {
+		sl[i] = byte(i / 255)
+	}
+	reqProto = Onekreq{
+		Id:   1234,
+		Data: sl,
+	}
+	mb, _ := proto.Marshal(&reqProto)
+	fmt.Println(len(mb)) // 1030 // HL
 }
 
 func main() {
