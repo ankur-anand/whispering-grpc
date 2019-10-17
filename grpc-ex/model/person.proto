@@ -1,5 +1,4 @@
 syntax = "proto3";
-
 package model;
 
 message User {
@@ -15,7 +14,7 @@ message Users {
 message Void{}
 
 // gRPC We need to define a services.
-service GetUser {
-    rpc List(Void) returns (Users){}
-    rpc Add(User) returns(Void){}
+service GetUser { // HL
+    rpc List(Void) returns (Users){} // HL
+    rpc Add(User) returns(Void){} // HL
 }

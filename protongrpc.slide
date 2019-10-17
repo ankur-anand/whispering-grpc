@@ -128,4 +128,95 @@ Reserve the numbers 1 through 15 for very frequently occurring message elements.
 
 * Demo
 
+* RPC
 
+_A_remote_procedure_call_(RPC)_is_when_a_computer_program_causes_a_procedure_(subroutine)_to_execute_in_a_
+
+- _different_address_space_(commonly_on_another_computer_on_a_shared_network)_,
+_which_is_coded_as_if_it_were_a_normal_(local)_procedure_call,_
+
+*without*the*programmer*explicitly*coding*the*details*for*the*remote*interaction.*
+
+
+So somehow rpc framework will generate a stub for the client, which will call the Remote Function.
+
+- _A_stub_in_distributed_computing_is_a_piece_of_code_that_converts_parameters_passed_between_client_and_server_during_a_remote_procedure_call_(RPC)._
+
+.link https://github.com/ankur-anand/simple-go-rpc Writing simple RPC framework in 300 lines of pure Golang.
+
+* gRPC
+
+A high performance, open-source universal RPC framework.
+.link https://grpc.io/ grpc.io
+
+- In gRPC a client application can directly call methods on a server application on a different machine as if it was a local object, making it easier for you to create distributed applications and services.
+
+- As in many RPC systems, gRPC is based around the idea of defining a service, specifying the methods that can be called remotely with their parameters and return types.
+
+- On the server side, the server implements this interface and runs a gRPC server to handle client calls
+
+- On the client side, the client has a stub (referred to as just a client in some languages) that provides the same methods as the server.
+
+* gRPC Basics - Go
+
+- Define a service in a .proto file.
+- Generate server and client code using the protocol buffer compiler.
+- Use the Go gRPC API to write a simple client and server for your service.
+
+gRPC lets you define four kinds of service methods.
+
+- Unary RPCs (like a normal function call).
+
+- Server streaming RPCs.
+
+- Client streaming RPCs.
+
+- Bidirectional streaming RPCs.
+
+*  Define a service in a .proto file.
+
+To define a service, you specify a named service in your .proto file: Then you define rpc methods inside your service definition, specifying their request and response types.
+
+.code grpc-ex/model/person.proto
+
+* Generate server and client code using the protocol buffer compiler.
+ protoc -I $I_DIR/ $I_DIR/name.proto --go_out=plugins=grpc:$OUT_DIR
+
+* Generated Server
+.code code-blocks/getuser.go
+
+* Creating the server
+Implementing the service interface generated from our service definition: doing the actual “work” of our service.
+.code code-blocks/registerServer.go
+
+* Creating the server
+Running a gRPC server to listen for requests from clients and dispatch them to the right service implementation.
+
+.code code-blocks/runGrpcServer.go
+
+* Client interface
+
+.code code-blocks/clientInterface.go
+
+protocol buffer compiler also generates the client stub that implements this interface.
+
+* Client stub
+.code code-blocks/clientStub.go
+
+* Creating the client
+To call service methods, we first need to create a gRPC channel to communicate with the server.
+
+We create this by passing the server address and port number to grpc.Dial() as follows:
+
+    con, err := grpc.Dial(":3002", grpc.WithInsecure())
+
+Once the gRPC channel is setup, we need a client stub to perform RPCs. We get this using the NewGetUserClient method provided in the pb package we generated from our .proto.
+
+    client := model.NewGetUserClient(con)
+
+* Calling service methods
+
+    client.List(ctx, &model.Void{})
+    client.Add(ctx, user)
+
+* Demo
