@@ -8,7 +8,7 @@ How do we create an new type?
 
 Classical OOP - Provides concept of `CLASS`. Class helps you to create a new
  type.
- 
+
 ```javascript
 class Person {
     constructor(name, age, email) {

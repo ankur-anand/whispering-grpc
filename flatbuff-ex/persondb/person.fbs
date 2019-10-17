@@ -1,0 +1,7 @@
+namespace persondb;
+
+struct Person {
+  name:string;
+  y:float;
+  z:float;
+}

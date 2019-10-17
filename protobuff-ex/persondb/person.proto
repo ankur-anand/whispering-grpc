@@ -1,9 +1,11 @@
-syntax = "proto3";
+syntax = "proto3"; // HL
 
 package persondb;
 
-message Person {
+// START OMIT
+message Person { // HL
     string name = 1;
     uint32 age = 2;
     string email = 3;
 }
+// END OMIT

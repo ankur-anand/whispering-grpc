@@ -1,0 +1,131 @@
+#+theme=black
+Hands-on with protobuf and gRPC
+
+Ankur Anand
+Developer, Sap Labs India
+https://ankuranand.com
+@in_aanand
+
+
+* Who Am I ?
+
+- Developer, Sap Labs India
+- Gopher | Node.js Developer | UNIX Nerd by Passion
+.link https://twitter.com/in_aanand Twitter @in_aanand
+.link https://ankuranand.com https://ankuranand.com
+
+* Agenda
+- Serialization and Why does it matters ?
+- Protocol Buffers Basic
+- Protocol Buffers Example
+- What is RPC ?
+- gRPC Example
+
+
+* Serialization
+How do we decorate binary number (01011) etc with the type information for other to make sense, because without these type information these number can mean anything and is of no use.
+
+
+- Serialized Data Size should be minimum for faster communication
+
+- JSON
+- XML
+- Binary (Protobuff)
+
+
+* Go Type Size
+
+.code encoding-matters/it-matters/main.go /START OMIT/,/END OMIT/
+.code encoding-matters/it-matters/main.go /^func printGoSize/,/^}/
+
+* JSON Size
+
+.code encoding-matters/it-matters/main.go /START OMIT/,/END OMIT/
+.code encoding-matters/it-matters/main.go /^func printJSONSize/,/^}/
+
+* XML Size
+
+.code encoding-matters/it-matters/main.go /START OMIT/,/END OMIT/
+.code encoding-matters/it-matters/main.go /^func printXMLSize/,/^}/
+
+* Binary (protobuff) Size
+
+.code encoding-matters/it-matters/onekreq.proto
+.code encoding-matters/it-matters/main.go /^func printProtobuffSize/,/^}/
+
+* Protocol Buffers
+
+Protocol buffers are Google's language-neutral, platform-neutral, extensible mechanism for serializing structured data – *think* *XML*, but
+
+- smaller
+.code code-blocks/blocks.go /^func printXMLSize/,/^}/
+.code code-blocks/blocks.go /^func printProtobuffSize/,/^}/
+- faster, and
+- simpler.
+
+* Installation
+
+To install protobuf, you need to install the protocol compiler (used to compile .proto files) and the protobuf runtime for your chosen programming language.
+
+.link https://github.com/protocolbuffers/protobuf#protocol-compiler-installation Protocol Compiler Installation
+
+.link https://github.com/protocolbuffers/protobuf#protobuf-runtime-installation Protobuf Runtime Installation
+
+* Some Alternatives
+
+- eProsima Fast Buffers
+- cap'n proto
+- flatbuffers
+
+* Protocol Buffer Basics: Go
+
+- *Define* *message* formats in a .proto file.
+.code protobuff-ex/persondb/person.proto
+- Use the protocol buffer compiler.
+.code code-blocks/protoc.sh
+
+- Use the Go protocol buffer API to write and read messages.
+
+* What is message?
+
+Suppose we want to represents an Person Information type.How do we represent a person?
+
+- Classical OOP - Provides concept of *CLASS*. Class helps you to compose a new type from primitive types.
+
+.code code-blocks/person.js
+
+- GO - Named type with type definition syntax.
+
+.code code-blocks/person.go /START OMIT/,/END OMIT/
+
+* What is message?
+
+So What construct does the *Protocol* *Buffers* provides to compose a new type from primitive type.
+
+- message (an aggregate containing a set of typed fields).
+.code protobuff-ex/persondb/person.proto /START OMIT/,/END OMIT/
+
+-  simple data types are available as field types, including *bool*, *int32*, *float*, *double*, and *string*.
+
+.link https://developers.google.com/protocol-buffers/docs/proto3#scalar Doc for all Scalar Value Types
+
+* Assigning Field Numbers
+
+Each field in the message definition has a unique number. These field numbers are used to identify your fields in the message binary format, and should not be changed once your message type is in use.
+
+.code protobuff-ex/persondb/person.proto /START OMIT/,/END OMIT/
+
+* Assigning Field Numbers
+
+- Field numbers in the range 1 through 15 take one byte to encode, including the field number and the field's type.
+.code code-blocks/1byte.go
+
+* Assigning Field Numbers
+- Field numbers in the range 16 through 2047 take two bytes.
+.code code-blocks/2byteMarshalSize.go
+
+Reserve the numbers 1 through 15 for very frequently occurring message elements.
+
+* Demo
+
+

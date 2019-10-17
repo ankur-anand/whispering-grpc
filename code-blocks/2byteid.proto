@@ -1,0 +1,10 @@
+message onekreq {
+    uint64 id = 1; // HL
+    bytes data = 2;
+}
+
+message onekreq1 {
+    uint64 id = 17; // HL
+    bytes data = 2;
+}
+
