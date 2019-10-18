@@ -15,7 +15,7 @@ import (
 
 // START OMIT
 
-// OnekRequest represents an request of size (approzimately)
+// OnekRequest represents an request of size (approximately)
 // one KB in go type
 type OnekRequest struct { // HL
 	ID   int64      // HL
@@ -44,7 +44,6 @@ func printJSONSize() {
 		Data: [1024]byte{},
 	}
 
-	// verify using unsafe package
 	var jsonXML bytes.Buffer
 	jsonEnc := json.NewEncoder(&jsonXML)
 	jsonEnc.Encode(req)
